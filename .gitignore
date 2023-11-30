@@ -29,6 +29,9 @@ _ReSharper.*
 # Игнорировать папку application architecture
 application architecture/
 
+# Ignore secretKey folder
+secretKey/
+
 # Игнорировать библиотеки Google Drive API и библиотеки для работы с Excel
 Google.Apis.Drive.v3/
 EPPlus/
