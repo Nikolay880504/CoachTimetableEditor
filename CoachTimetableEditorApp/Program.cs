@@ -1,5 +1,4 @@
 using CoachTimetableEditorApp.Authentication;
-using CoachTimetableEditorApp.DataAccess;
 using CoachTimetableEditorApp.GoogleDriveExcelManager;
 using CoachTimetableEditorApp.GoogleSheetlManager;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -30,7 +29,7 @@ namespace CoachTimetableEditorApp
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

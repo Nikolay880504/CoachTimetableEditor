@@ -1,5 +1,4 @@
 ﻿using CoachTimetableEditorApp.Authentication;
-using CoachTimetableEditorApp.DataAccess;
 using CoachTimetableEditorApp.GoogleSheetlManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
