@@ -23,7 +23,7 @@ namespace CoachTimetableEditorApp.Pages
 
         public void OnPostConfigureDriveService()
         {
-            _googleSheetHandler.UpdateSheetCellValue();
+            _googleSheetHandler.UpdateSheetCellValueAsync();
         }
     }
 }

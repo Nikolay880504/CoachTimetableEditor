@@ -32,9 +32,9 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
 
         }
 
-        public void UpdateSheetCellValue()
+        public async Task UpdateSheetCellValueAsync()
         {
-            var fileList = GetFilesList(_driveService);
+            var fileList = await GetFilesListAsync();
             SetCurrentDate();
             SetCultureInfoForUkraine();
 
@@ -43,9 +43,9 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
                 foreach (var file in fileList.Files)
                 {
                     var spreadsheetListRequest = _sheetsService.Spreadsheets.Get(file.Id);
-                    var spreadsheet = spreadsheetListRequest.Execute();
+                    var spreadsheet = await spreadsheetListRequest.ExecuteAsync();
 
-                    UpdateFileNameToCurrentMonth(spreadsheet.SpreadsheetId, file.Name);
+                    await UpdateFileNameToCurrentMonth(spreadsheet.SpreadsheetId, file.Name);
 
                     if (spreadsheet.Sheets != null && spreadsheet.Sheets.Count > 0)
                     {
@@ -53,23 +53,23 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
                         {
                             if (sheet.Properties != null)
                             {
-                                ClearSheetRange(spreadsheet.SpreadsheetId, sheet.Properties.Title);
-                                UpdateMonthNames(spreadsheet.SpreadsheetId, sheet.Properties.Title);
-                                MapDatesToDaysOfWeek(spreadsheet.SpreadsheetId, sheet.Properties.Title);
+                                await ClearSheetRange(spreadsheet.SpreadsheetId, sheet.Properties.Title);
+                                await UpdateMonthNames(spreadsheet.SpreadsheetId, sheet.Properties.Title);
+                                await MapDatesToDaysOfWeek(spreadsheet.SpreadsheetId, sheet.Properties.Title);
                             }
                         }
                     }
                 }
             }
         }
-        static Google.Apis.Drive.v3.Data.FileList GetFilesList(DriveService driveService)
+        private async Task<Google.Apis.Drive.v3.Data.FileList> GetFilesListAsync()
         {
-            var request = driveService.Files.List();
-            return request.Execute();
+            var request = _driveService.Files.List();
+            return await request.ExecuteAsync();
         }
-        private void ClearSheetRange(string spreadsheetId, string nameSheet)
+        private async Task ClearSheetRange(string spreadsheetId, string nameSheet)
         {
-             
+
             if (spreadsheetId == null || string.IsNullOrEmpty(nameSheet))
             {
                 return;
@@ -79,9 +79,9 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
 
             var clearRequest = _sheetsService.Spreadsheets.Values.Clear(clearRequestBody, spreadsheetId, range);
 
-            clearRequest.Execute();
+            await clearRequest.ExecuteAsync();
         }
-        private void UpdateMonthNames(string spreadsheetId, string nameSheet)
+        private async Task UpdateMonthNames(string spreadsheetId, string nameSheet)
         {
             var curentMonthAndYear = $"{GetCurrentYear()} {_currentDateTime.ToString("MMMM", _cultureInfo).ToUpper()}";
             var range = $"{nameSheet}{MonthNamesRangeString}";
@@ -92,9 +92,9 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
             var updateRequest = _sheetsService.Spreadsheets.Values.Update(valueRange, spreadsheetId, range);
             updateRequest.ValueInputOption = UpdateRequest.ValueInputOptionEnum.RAW;
 
-            updateRequest.Execute();
+            await updateRequest.ExecuteAsync();
         }
-        private void MapDatesToDaysOfWeek(string spreadsheetId, string nameSheet)
+        private async Task MapDatesToDaysOfWeek(string spreadsheetId, string nameSheet)
         {
             var rangeForDayOfWeek = $"{nameSheet}{DayOfWeekRangeString}";
             var rangeNumbersDayOfMonth = $"{nameSheet}{NumbersDayOfMonthRangeString}";
@@ -128,11 +128,11 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
             var updateRequestForNumbers = _sheetsService.Spreadsheets.Values.Update(valueRangeForNumbers, spreadsheetId, rangeNumbersDayOfMonth);
             updateRequestForNumbers.ValueInputOption = UpdateRequest.ValueInputOptionEnum.RAW;
 
-            updateRequestForDayOfWeek.Execute();
-            updateRequestForNumbers.Execute();
+            await updateRequestForDayOfWeek.ExecuteAsync();
+            await updateRequestForNumbers.ExecuteAsync();
 
         }
-        private void UpdateFileNameToCurrentMonth(string spreadsheetId, string fileName)
+        private async Task UpdateFileNameToCurrentMonth(string spreadsheetId, string fileName)
         {
             var ukranianMonth = new string[] { "СІЧЕНЬ","ЛЮТИЙ","БЕРЕЗЕНЬ","КВІТЕНЬ","ТРАВЕНЬ","ЛИПЕНЬ","СІЧЕНЬ","СЕРПЕНЬ",
             "ВЕРЕСЕНЬ","ЖОВТЕНЬ","ЛИСТОПАД","ГРУДЕНЬ"
@@ -156,9 +156,9 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
             }
             var newFileName = string.Join(" ", newFileNameParts);
 
-            CreatingRequestToChangeTheFileName(newFileName, spreadsheetId);
+            await CreatingRequestToChangeTheFileName(newFileName, spreadsheetId);
         }
-        private void CreatingRequestToChangeTheFileName(string newFileName, string spreadsheetId)
+        private async Task CreatingRequestToChangeTheFileName(string newFileName, string spreadsheetId)
         {
             var request = new BatchUpdateSpreadsheetRequest
             {
@@ -177,7 +177,7 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
             }
         }
             };
-            _sheetsService.Spreadsheets.BatchUpdate(request, spreadsheetId).Execute();
+            await _sheetsService.Spreadsheets.BatchUpdate(request, spreadsheetId).ExecuteAsync();
         }
         private void SetCurrentDate()
         {

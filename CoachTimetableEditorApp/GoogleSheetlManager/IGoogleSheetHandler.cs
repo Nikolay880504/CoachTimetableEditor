@@ -2,6 +2,6 @@
 {
     public interface IGoogleSheetHandler
     {
-        public void UpdateSheetCellValue();
+        Task UpdateSheetCellValueAsync();
     }
 }
