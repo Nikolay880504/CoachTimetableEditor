@@ -2,9 +2,6 @@
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
-using Google.Apis.Util.Store;
-
-
 
 namespace CoachTimetableEditorApp.Authentication
 {
@@ -20,7 +17,6 @@ namespace CoachTimetableEditorApp.Authentication
             {
                 HttpClientInitializer = credential
             });
-
             return service;
         }
 

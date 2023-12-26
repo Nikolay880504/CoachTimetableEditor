@@ -47,6 +47,9 @@ WinFormsApp/obj/
 WPFApp/bin/
 WPFApp/obj/
 
+# Игнорировать папку для логов
+Logs/
+
 # Игнорировать папки и файлы для ASP.NET Core или ASP.NET MVC
 AspNetCoreApp/bin/
 AspNetCoreApp/obj/

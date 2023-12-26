@@ -11,7 +11,6 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
     public class GoogleSheetHandler : IGoogleSheetHandler
     {
         private readonly IGoogleAuthentication _googleAuthentication;
-        private readonly ILogger<GoogleSheetHandler> _logger;
 
         private DriveService _driveService;
         private readonly SheetsService _sheetsService;
@@ -23,13 +22,11 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
         private const string DayOfWeekRangeString = "!C2:AG2";
         private const string NumbersDayOfMonthRangeString = "!C3:AG3";
 
-        public GoogleSheetHandler(IGoogleAuthentication googleAuthentication, ILogger<GoogleSheetHandler> logger)
+        public GoogleSheetHandler(IGoogleAuthentication googleAuthentication)
         {
             _googleAuthentication = googleAuthentication;
-            _logger = logger;
             _driveService = _googleAuthentication.GetDriveService();
             _sheetsService = _googleAuthentication.GetSheetsService();
-
         }
 
         public async Task UpdateSheetCellValueAsync()
@@ -53,9 +50,10 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
                         {
                             if (sheet.Properties != null)
                             {
-                                await ClearSheetRange(spreadsheet.SpreadsheetId, sheet.Properties.Title);
+                                await ClearSheetRange(spreadsheet.SpreadsheetId, sheet.Properties.Title);                              
                                 await UpdateMonthNames(spreadsheet.SpreadsheetId, sheet.Properties.Title);
                                 await MapDatesToDaysOfWeek(spreadsheet.SpreadsheetId, sheet.Properties.Title);
+                                
                             }
                         }
                     }
@@ -69,18 +67,12 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
         }
         private async Task ClearSheetRange(string spreadsheetId, string nameSheet)
         {
-
-            if (spreadsheetId == null || string.IsNullOrEmpty(nameSheet))
-            {
-                return;
-            }
             var range = $"{nameSheet}{ClearSheetRangeString}";
             var clearRequestBody = new ClearValuesRequest();
 
             var clearRequest = _sheetsService.Spreadsheets.Values.Clear(clearRequestBody, spreadsheetId, range);
-
             await clearRequest.ExecuteAsync();
-        }
+        }     
         private async Task UpdateMonthNames(string spreadsheetId, string nameSheet)
         {
             var curentMonthAndYear = $"{GetCurrentYear()} {_currentDateTime.ToString("MMMM", _cultureInfo).ToUpper()}";
@@ -130,7 +122,6 @@ namespace CoachTimetableEditorApp.GoogleDriveExcelManager
 
             await updateRequestForDayOfWeek.ExecuteAsync();
             await updateRequestForNumbers.ExecuteAsync();
-
         }
         private async Task UpdateFileNameToCurrentMonth(string spreadsheetId, string fileName)
         {

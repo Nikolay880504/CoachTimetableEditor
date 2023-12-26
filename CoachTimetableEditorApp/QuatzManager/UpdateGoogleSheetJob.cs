@@ -1,7 +1,5 @@
 ﻿using CoachTimetableEditorApp.GoogleSheetlManager;
 using Quartz;
-using Quartz.Impl;
-
 
 namespace CoachTimetableEditorApp.QuatzManager
 {
